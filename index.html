@@ -96,6 +96,11 @@
         }
 
         const display_recent_searches = () => {
+
+            if(!localStorage.weatherSearches) {
+                localStorage.weatherSearches = "[]";
+            }
+
             document.getElementById("recent_searches").innerHTML = "";
 
             let searches = JSON.parse(localStorage.weatherSearches);
@@ -167,9 +172,7 @@
                 console.log(res.data);
                 let cityState = `${res.data[0].name}, ${res.data[0].state}`;
                 set("city_name", `Weather for ${cityState}`);
-                if(!localStorage.weatherSearches) {
-                    localStorage.weatherSearches = "[]";
-                }
+                
 
                 let recentSearches = JSON.parse(localStorage.weatherSearches);
                 let alreadySearched = false;
@@ -192,6 +195,7 @@
                 set("city_name", `City "${city}" not found`);
             });
         });
+
         display_recent_searches();
 
     </script>
