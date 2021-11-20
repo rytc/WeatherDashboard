@@ -149,7 +149,7 @@
 
                     elem.innerHTML = `
                         <h4>${moment(date).format("MM/DD/YYYY")}</h4>
-                        <img src="http://openweathermap.org/img/w/${day.weather[0].icon}.png" alt="${day.weather[0].description}"><br />
+                        <img src="https://openweathermap.org/img/w/${day.weather[0].icon}.png" alt="${day.weather[0].description}"><br />
                         <p>
                             Temp: ${day.temp.day} °F<br />
                             Humidity: ${day.humidity}
@@ -167,7 +167,7 @@
             let city = document.getElementById("search_city").value;
 
             // Convert city name to lat/long
-            axios.get(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${api_key}`)
+            axios.get(`https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${api_key}`)
             .then((res) => {
                 console.log(res.data);
                 let cityState = `${res.data[0].name}, ${res.data[0].state}`;
