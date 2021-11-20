@@ -36,7 +36,7 @@
             color:white;
         }
 
-        main {
+        border {
             border: 1px solid gray;
             border-radius: 8px;
             padding: 0.5em;
@@ -54,19 +54,24 @@
     <main class="container">
         <div class="row">
             <div class="col-4">
-                <input type="text" value="Enter a city" id="search_city">
-                <button class="btn btn-primary" id="search_btn">Search</button>
+                <input type="text" value="Irvine" id="search_city">
+                <button class="btn btn-primary" id="search_btn">Search</button><br />
+                <ul class="list-group" id="recent_searches">
+                </ul>
             </div>
             <div class="col-8">
-                <h1 id="city_name"></h1>
-                <p>
-                    Temperature: <span id="city_current_temp"></span><br />
-                    Humidity: <span id="city_current_humidity"></span><br />
-                    Wind Speed: <span id="city_current_wind_speed"></span><br />
-                    UV Index: <span id="city_current_uv" class="uv favorable"></span>
-                </p>
+                <div class="border">
+                    <h1 id="city_name">Search for a city</h1>
+                    <p id="city_current" style="display: none;">
+                        Temperature: <span id="city_current_temp"></span><br />
+                        Humidity: <span id="city_current_humidity"></span><br />
+                        Wind Speed: <span id="city_current_wind_speed"></span><br />
+                        UV Index: <span id="city_current_uv" class="uv favorable"></span>
+                    </p>
+                </div>
+                <h1>5-day forecast</h1>
                 <div class="container">
-                    <div class="row" id="forcast">
+                    <div class="row" id="forecast">
                     </div>
             </div>
         </div>
@@ -86,11 +91,30 @@
             document.getElementById(id).className = style;
         }
 
+        const display_recent_searches = () => {
+            document.getElementById("recent_searches").innerHTML = "";
+
+            let searches = JSON.parse(localStorage.weatherSearches);
+
+            searches.forEach(search => {
+               let elem = document.createElement("li");
+               elem.className = "list-group-item list-group-item-action";
+               elem.innerHTML = search;
+               elem.addEventListener("click", (event) => {
+                   document.getElementById("search_city").value = search;
+                   document.getElementById("search_btn").click();
+               });
+               document.getElementById("recent_searches").append(elem);
+            });
+
+        }
+
         const get_weather_data = (lat, lon) => {
             axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly,minutely&units=imperial&appid=${api_key}`)
             .then((res) => {
                 console.log(res.data);
                 let current = res.data.current;
+                document.getElementById("city_current").style.display = "";
                 document.getElementById("city_name").innerHTML += `<img src="http://openweathermap.org/img/w/${current.weather[0].icon}.png" alt="${current.weather[0].description}">`;
                 set("city_current_temp", current.temp + "°F");
                 set("city_current_humidity", current.humidity);
@@ -105,6 +129,9 @@
                     setClass("city_current_uv", "uv severe");
                 }
 
+                document.getElementById("forecast").innerHTML = "";
+                document.getElementById("forecast").style.display = "";
+
                 for(let i = 0; i < res.data.daily.length; i++) {
                     let day = res.data.daily[i];
                     let elem = document.createElement("div");
@@ -116,7 +143,7 @@
                             Humidity: ${day.humidity}
                         </p> 
                     `;
-                    document.getElementById("forcast").append(elem);
+                    document.getElementById("forecast").append(elem);
                 }
             }).catch((res) => {
                 set("city_name", "Failed to fetch weather data for ${city}");
@@ -131,12 +158,35 @@
             axios.get(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${api_key}`)
             .then((res) => {
                 console.log(res.data);
-                set("city_name", `Weather for ${res.data[0].name}, ${res.data[0].state}`);
-                get_weather_data(res.data[0].lat, res.data[0].lon);
+                let cityState = `${res.data[0].name}, ${res.data[0].state}`;
+                set("city_name", `Weather for ${cityState}`);
+                
+                if(!localStorage.weatherSearches) {
+                    localStorage.weatherSearches = "[]";
+                }
+
+                let recentSearches = JSON.parse(localStorage.weatherSearches);
+                let alreadySearched = false;
+                for(let i = 0; i < recentSearches.length; i++) {
+                    if(recentSearches[i] === res.data[0].name) {
+                        alreadySearched = true;
+                        break;
+                    }
+                }
+                if(!alreadySearched) {
+                    recentSearches.push(`${res.data[0].name}`);
+                }
+                localStorage.weatherSearches = JSON.stringify(recentSearches);
+                display_recent_searches();
+
+                get_weather_data(res.data[0].lat, res.data[0].lon, cityState);
             }).catch((res) => {
+                document.getElementById("forecast").style.display = "none";
+                document.getElementById("city_current").style.display = "none";
                 set("city_name", `City "${city}" not found`);
             });
         });
+        display_recent_searches();
 
     </script>
 
