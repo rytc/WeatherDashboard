@@ -119,7 +119,7 @@
                 console.log(res.data);
                 let current = res.data.current;
                 document.getElementById("city_current").style.display = "";
-                document.getElementById("city_name").innerHTML += `<img src="http://openweathermap.org/img/w/${current.weather[0].icon}.png" alt="${current.weather[0].description}">${moment().format("MM/DD/YYYY")}`;
+                document.getElementById("city_name").innerHTML += `<img src="https://openweathermap.org/img/w/${current.weather[0].icon}.png" alt="${current.weather[0].description}">${moment().format("MM/DD/YYYY")}`;
                 set("city_current_temp", current.temp + "°F");
                 set("city_current_humidity", current.humidity);
                 set("city_current_wind_speed", current.wind_speed + " MPH");
