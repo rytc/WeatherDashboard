@@ -56,13 +56,13 @@
 
     <main class="container">
         <div class="row">
-            <div class="col-4">
+            <div class="col-md-4">
                 <input type="text" value="Irvine" id="search_city">
                 <button class="btn btn-primary" id="search_btn">Search</button><br />
                 <ul class="list-group" id="recent_searches">
                 </ul>
             </div>
-            <div class="col-8">
+            <div class="col-md-8">
                 <div class="border">
                     <h1 id="city_name">Search for a city</h1>
                     <p id="city_current" style="display: none;">
@@ -139,7 +139,7 @@
                 for(let i = 1; i < res.data.daily.length - 2; i++) {
                     let day = res.data.daily[i];
                     let elem = document.createElement("div");
-                    elem.className = "col-sm-2 daily m-2";
+                    elem.className = "col-lg-2 daily m-2";
                     let date = moment().date(moment().date() + i);
 
                     elem.innerHTML = `
