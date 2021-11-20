@@ -36,10 +36,13 @@
             color:white;
         }
 
-        border {
+        .border {
             border: 1px solid gray;
             border-radius: 8px;
             padding: 0.5em;
+        }
+        .pointer {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -80,6 +83,7 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script>
         const api_key = "6a7320a3950673dfa74121b04000e29a";
@@ -98,7 +102,7 @@
 
             searches.forEach(search => {
                let elem = document.createElement("li");
-               elem.className = "list-group-item list-group-item-action";
+               elem.className = "list-group-item list-group-item-action pointer";
                elem.innerHTML = search;
                elem.addEventListener("click", (event) => {
                    document.getElementById("search_city").value = search;
@@ -115,7 +119,7 @@
                 console.log(res.data);
                 let current = res.data.current;
                 document.getElementById("city_current").style.display = "";
-                document.getElementById("city_name").innerHTML += `<img src="http://openweathermap.org/img/w/${current.weather[0].icon}.png" alt="${current.weather[0].description}">`;
+                document.getElementById("city_name").innerHTML += `<img src="http://openweathermap.org/img/w/${current.weather[0].icon}.png" alt="${current.weather[0].description}">${moment().format("MM/DD/YYYY")}`;
                 set("city_current_temp", current.temp + "°F");
                 set("city_current_humidity", current.humidity);
                 set("city_current_wind_speed", current.wind_speed + " MPH");
@@ -132,11 +136,14 @@
                 document.getElementById("forecast").innerHTML = "";
                 document.getElementById("forecast").style.display = "";
 
-                for(let i = 0; i < res.data.daily.length; i++) {
+                for(let i = 1; i < res.data.daily.length - 2; i++) {
                     let day = res.data.daily[i];
                     let elem = document.createElement("div");
                     elem.className = "col-sm-2 daily m-2";
+                    let date = moment().date(moment().date() + i);
+
                     elem.innerHTML = `
+                        <h4>${moment(date).format("MM/DD/YYYY")}</h4>
                         <img src="http://openweathermap.org/img/w/${day.weather[0].icon}.png" alt="${day.weather[0].description}"><br />
                         <p>
                             Temp: ${day.temp.day} °F<br />
@@ -160,7 +167,6 @@
                 console.log(res.data);
                 let cityState = `${res.data[0].name}, ${res.data[0].state}`;
                 set("city_name", `Weather for ${cityState}`);
-                
                 if(!localStorage.weatherSearches) {
                     localStorage.weatherSearches = "[]";
                 }
