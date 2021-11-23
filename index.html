@@ -128,7 +128,7 @@
                 set("city_current_temp", current.temp + "°F");
                 set("city_current_humidity", current.humidity);
                 set("city_current_wind_speed", current.wind_speed + " MPH");
-                let uvi = current.uvi;
+                let uvi = res.data.daily[0].uvi; //current.uvi;
                 set("city_current_uv", uvi)
                 if(uvi < 3) {
                     setClass("city_current_uv", "uv favorable");
